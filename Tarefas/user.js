@@ -134,11 +134,21 @@ document.addEventListener('DOMContentLoaded', function () {
         // Cria elementos de input para editar a tarefa
         const editTaskName = document.createElement('input');
         editTaskName.value = taskItem.name;
+        editTaskName.classList.add('input-action')
         const editTaskDescription = document.createElement('input');
         editTaskDescription.value = taskItem.description;
+        editTaskDescription.classList.add('input-action')
         const editTaskDueDate = document.createElement('input');
         editTaskDueDate.type = 'date';
         editTaskDueDate.value = taskItem.dueDate;
+        const editTaskPriority = document.createElement('select');
+    editTaskPriority.id = 'edit-task-priority';
+    editTaskPriority.innerHTML = `
+        <option value="alta">Alta</option>
+        <option value="média">Média</option>
+        <option value="baixa">Baixa</option>
+    `;
+    editTaskPriority.value = taskItem.priority;
 
         // Substitue o item da lista pela edição
         const listItem = taskList.children[taskId];
@@ -146,12 +156,15 @@ document.addEventListener('DOMContentLoaded', function () {
         listItem.appendChild(editTaskName);
         listItem.appendChild(editTaskDescription);
         listItem.appendChild(editTaskDueDate);
+        listItem.appendChild(editTaskPriority);
+
 
         // Adiciona botões para salvar ou cancelar a edição
         const saveButton = document.createElement('button');
-        saveButton.classList.add('save-button');
+        saveButton.classList.add('save-button', 'action-button');
         saveButton.setAttribute('data-id', taskId);
         saveButton.textContent = 'Salvar';
+        saveButton.style.marginBottom = '10px';
         const cancelButton = document.createElement('button');
         cancelButton.classList.add('cancel-button');
         cancelButton.setAttribute('data-id', taskId);
@@ -167,6 +180,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const editedTaskName = listItem.querySelector('input:nth-child(1)').value;
         const editedTaskDescription = listItem.querySelector('input:nth-child(2)').value;
         const editedTaskDueDate = listItem.querySelector('input:nth-child(3)').value;
+        const editedTaskPriority = listItem.querySelector('#edit-task-priority').value;
+
 
         const currentDate = new Date().toISOString().split('T')[0];
         if (editedTaskDueDate < currentDate) {
@@ -177,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
         userTasks[taskId].name = editedTaskName;
         userTasks[taskId].description = editedTaskDescription;
         userTasks[taskId].dueDate = editedTaskDueDate;
+        userTasks[taskId].priority = editedTaskPriority;
 
         localStorage.setItem(loggedInUser, JSON.stringify(userTasks));
         loadTasks(); // Atualiza a lista de tarefas
@@ -208,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <strong>Nome:</strong> ${task.name}<br>
                 <strong>Descrição:</strong> ${task.description}<br>
                 <strong>Prazo:</strong> ${task.dueDate}<br>
+                <strong>Prioridade:</strong> ${task.priority}<br>
                 <button data-id="${index}" class="complete-button">Concluir</button>
                 <div class="espace2"></div>
                 <button data-id="${index}" class="edit-button">Editar</button>
@@ -223,6 +240,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const taskName = document.getElementById('task-name').value;
         const taskDescription = document.getElementById('task-description').value;
         const taskDueDate = document.getElementById('task-due-date').value;
+        const taskPriority = document.getElementById('task-priority').value; 
+
 
         const currentDate = new Date().toISOString().split('T')[0];
         if (taskDueDate < currentDate) {
@@ -240,7 +259,8 @@ document.addEventListener('DOMContentLoaded', function () {
             name: taskName,
             description: taskDescription,
             dueDate: taskDueDate,
-            state: "Pendente", //Coloca o estado pendente por padrão
+            state: "Pendente",
+            priority: taskPriority
         };
         userTasks.push(newTask);
         localStorage.setItem(loggedInUser, JSON.stringify(userTasks));
@@ -248,6 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTaskForm();
         loadTasks();
     });
+
 
     loadTasks(); // Carrega as tarefas iniciais
 });
